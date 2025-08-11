@@ -1,4 +1,5 @@
 import Breadcrumb from "../components/Breadcrumb";
+import Camera from "../components/Camera";
 import Menu from "../components/Menu";
 import Navbar from "../components/Navbar";
 
@@ -7,6 +8,7 @@ export default function Home() {
         <div>
             <Navbar />
             <Breadcrumb />
+            <Camera />
             <Menu />
         </div>
     )
