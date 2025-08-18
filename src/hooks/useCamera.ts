@@ -10,19 +10,29 @@ type PropsMedia = {
     audio: boolean
 }
 
-export function useCamera() {
+export function useCamera(switchCamera: boolean) {
     const videoElement = document.getElementById("video") as HTMLVideoElement;
 
-    const propsCamera: PropsCamera = {
-        useFront: true
+    if (videoElement.srcObject) {
+        const oldStream = videoElement.srcObject as MediaStream;
+        oldStream.getTracks().forEach(track => track.stop());
     }
 
+    console.log(switchCamera);
+
+    const propsCamera: PropsCamera = {
+        useFront: switchCamera
+    }
+
+    
     const propsMedia: PropsMedia = {
         video: {
-            facingMode: propsCamera.useFront ? "user" : { exact: "environment" }
+            facingMode: propsCamera.useFront ? "user" :  "environment"
         },
         audio: false
     }
+    console.log(propsCamera);
+    console.log(propsMedia);
 
     navigator.mediaDevices.getUserMedia(propsMedia)
         .then(stream => {
