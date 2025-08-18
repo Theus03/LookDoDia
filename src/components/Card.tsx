@@ -6,7 +6,13 @@ interface CardProps {
 }
 
 export default function Card({ look }: CardProps) {
-    const { renameLook, folderLook, removeLook } = useLookActions()
+    const {  folderLook, removeLook } = useLookActions()
+
+    function handleRename(id: number, name: string) {
+        console.log(id, name);
+        const modal = document.getElementById("modal") as HTMLDialogElement;
+        modal.showModal();
+    }
 
 
     return (
@@ -19,7 +25,7 @@ export default function Card({ look }: CardProps) {
               (look.folder != "" && look.folder != undefined) ? `<div className='badge badge-soft badge-warning m-2'>${look.folder}</div>` : ``
             }
             <div className="p-2 pb-6 flex gap-1 w-48">
-              <button className="btn btn-xs btn-soft btn-info p-2 w-12" title="Editar" onClick={() => renameLook(look.id, look.name)}>
+              <button className="btn btn-xs btn-soft btn-info p-2 w-12" title="Editar" onClick={() => handleRename(look.id, look.name)}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="#3b85fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>
               </button>
               <button className="btn btn-xs btn-soft btn-warning p-2 w-12" title="Adicionar" onClick={() => folderLook(look.id, look.folder)}>

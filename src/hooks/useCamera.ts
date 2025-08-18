@@ -18,8 +18,6 @@ export function useCamera(switchCamera: boolean) {
         oldStream.getTracks().forEach(track => track.stop());
     }
 
-    console.log(switchCamera);
-
     const propsCamera: PropsCamera = {
         useFront: switchCamera
     }
