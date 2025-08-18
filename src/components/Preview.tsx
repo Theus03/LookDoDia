@@ -1,5 +1,5 @@
 import { useRecoilValue } from "recoil";
-import photoState from "../atoms/photoAtom";
+import { photoState } from "../atoms/photoAtom";
 
 export default function Preview() {
     const photo = useRecoilValue(photoState);
@@ -9,7 +9,7 @@ export default function Preview() {
       <img
         id="preview"
         alt="Prévia do look"
-        src={photo || "/file-image-fill.png"}
+        src={(photo as string) || '/file-image-fill.png'}
         className="mt-8 w-100"
       />
       <div className="card-body">

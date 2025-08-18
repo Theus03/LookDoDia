@@ -3,7 +3,7 @@ import { useCamera } from "../hooks/useCamera";
 import { capturePhoto } from "../utils/cameraUtils";
 import { saveLook } from "../utils/indexedDBUtils";
 import { useSetRecoilState } from "recoil";
-import photoState from "../atoms/photoAtom";
+import { photoState } from "../atoms/photoAtom";
 import toast from "react-hot-toast";
 
 export default function Camera() {

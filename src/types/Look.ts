@@ -1,5 +1,5 @@
 export interface Look {
-    id?: number;
+    id: number;
     name: string;
     imagem: string;
     data: string;
