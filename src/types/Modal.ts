@@ -1,7 +1,6 @@
 export interface Modal {
     title: string,
     type: 'Rename' | 'Folder',
-    theme: 'warning' | 'success',
-    placeholder?: string,
+    value?: string,
     event?: Function
 }
