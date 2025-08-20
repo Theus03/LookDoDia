@@ -25,7 +25,7 @@ export default function Looks() {
             <Navbar />
             <ModalComponent modal={modalProps} />
             <Breadcrumb />
-                <div id="galeria" className="galeria-container grid grid-cols-2 gap-2 p-4 mb-6">
+                <div id="galeria" className="galeria-container grid grid-cols-2 gap-2 p-4 mb-6 max-[450px]:grid-cols-1">
                     {looks.map(look => <Card key={look.id} look={look} />)}
                 </div>
             <Menu />
