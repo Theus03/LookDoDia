@@ -34,7 +34,7 @@ export default function Modal({ modal }: ModalProps) {
                         modal.type == "Rename" && (
                             <>
                                 <div className="py-4">
-                                    <input type="text" id="txtRenameImage" value={modal.value} className="input input-info" />
+                                    <input type="text" id="txtRenameImage" value={modal.value} contentEditable="true" className="input input-info" />
                                 </div>
                                   <div className="modal-action">
                                     <form method="dialog">

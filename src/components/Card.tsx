@@ -3,6 +3,7 @@ import { useLookActions } from "../hooks/useLooksActions"
 import type { Look } from "../types/Look"
 import { modalState } from "../atoms/modalState"
 import type { Modal } from "../types/Modal"
+import toast from "react-hot-toast"
 
 interface CardProps {
     look: Look
@@ -32,6 +33,11 @@ export default function Card({ look }: CardProps) {
         modal.showModal();
     }
 
+    function handleRemove(id: number) {
+      removeLook(id);
+      toast.success("Look excluído com sucesso!", { "icon": "✅" })
+    }
+
 
     return (
         <div className="card bg-base-100 shadow-sm look-card">
@@ -49,7 +55,7 @@ export default function Card({ look }: CardProps) {
               <button className="btn btn-xs btn-soft btn-warning p-2 w-12" title="Adicionar" onClick={() => handleFolder(look.id, look.folder)}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="#fec158" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 10v6"/><path d="M9 13h6"/><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
               </button>
-              <button className="btn btn-xs btn-soft btn-error p-2 w-12" title="Remover" onClick={() => removeLook(look.id)}>
+              <button className="btn btn-xs btn-soft btn-error p-2 w-12" title="Remover" onClick={() => handleRemove(look.id)}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="#fc3b3b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
               </button>
             </div>
