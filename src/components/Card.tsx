@@ -11,7 +11,7 @@ interface CardProps {
 }
 
 export default function Card({ look }: CardProps) {
-    const { removeLook, renameLook, loadLooks } = useLookActions()
+    const { folderLook, removeLook, renameLook, loadLooks } = useLookActions()
     const modalProps = useSetRecoilState(modalState);
 
     function handleRename(id: number, name: string) {
@@ -63,19 +63,37 @@ export default function Card({ look }: CardProps) {
         } as Modal)
         modal.showModal();
 
-        const btnSalvarFolderLook = document.getElementById("btnSalvarFolderLook") as HTMLButtonElement;
-        console.log(btnSalvarFolderLook, id);
-        //btnSalvarFolderLook.onclick = () => saveLookInFolder(id);
+        setTimeout(() => {
+          const modalBox = document.querySelector(".modal-box");
+          const modalAction = modalBox?.querySelector(".modal-action");
+          const btnSaveFolderLook = modalAction?.querySelector("#btnSaveFolderLook") as HTMLButtonElement;
+          if (btnSaveFolderLook) {
+              btnSaveFolderLook.onclick = async () => {
+                await saveLookInFolder(id);
+                modal.close();
+              };
+          }
+        })        
     }
 
-    // function saveLookInFolder(id: number) {
-    //     const selectedRadio = document.querySelector(".folder input[type='radio']:checked") as HTMLInputElement;
-    //     if (selectedRadio) {
-    //       const folderDiv = selectedRadio.closest('.folder');
-    //       const folderName = folderDiv.querySelector('.nameFolder')?.textContent.trim() || "";
-    //       console.log(folderName);
-    //       folderLook(id, folderName);
-    // }
+    async function saveLookInFolder(id: number) {
+        const selectedRadio = document.querySelector(".folder input[type='radio']:checked") as HTMLInputElement;
+        if (selectedRadio) {
+          const folderDiv = selectedRadio.closest('.folder');
+          const folderName: string = folderDiv?.querySelector('.nameFolder')?.textContent.trim() || "";
+          console.log(folderName);
+          folderLook(id, folderName);
+            const lookUpdater: Look = {
+              id: id,
+              data: look.data,
+              folder: folderName,
+              imagem: look.imagem,
+              name: look.name
+            }
+            await updateLook(lookUpdater);
+            loadLooks();
+          }
+    }
 
     function handleRemove(id: number) {
       removeLook(id);
@@ -90,7 +108,7 @@ export default function Card({ look }: CardProps) {
             </figure>
             <span className="card-title p-2 max-[400px]:text-base">{look.name}</span>
             {
-              (look.folder != "" && look.folder != undefined) ? `<div className='badge badge-soft badge-warning m-2'>${look.folder}</div>` : ``
+              (look.folder != "" && look.folder != undefined) ? <div className='badge badge-soft badge-warning m-2'>{look.folder}</div> : ``
             }
             <div className="p-2 pb-6 flex flex-wrap gap-1 max-[580px]:w-30 max-[580px]:gap-4 max-[400px]:p-0">
               <button className="btn btn-xs btn-soft btn-info p-4 w-30 max-[580px]:w-full max-[450px]:w-70 max-[400px]:w-18" title="Editar" onClick={() => handleRename(look.id, look.name)}>

@@ -24,7 +24,7 @@ export default function Modal({ modal }: ModalProps) {
                                 <div className="modal-action">
                                     <span className={`btn btn-soft btn-warning`} id="btnAddFolderLook">Nova Pasta</span>
                                     <form method="dialog">
-                                        <button className={`btn btn-soft btn-warning`} id="btnSalvarFolderLook">Salvar</button>
+                                        <button className={`btn btn-soft btn-warning`} id="btnSaveFolderLook">Salvar</button>
                                     </form>
                                 </div>
                             </>
