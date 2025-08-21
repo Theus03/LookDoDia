@@ -17,27 +17,27 @@ export function useLookActions() {
     setLooks(prev => prev.filter(l => l.id !== id))
   }
 
-    const loadLooks = (): Promise<void> => {
-        return new Promise((resolve, reject) => {
-        const req = indexedDB.open("LookDB", 1);
+  const loadLooks = (): Promise<void> => {
+      return new Promise((resolve, reject) => {
+      const req = indexedDB.open("LookDB", 1);
 
-        req.onsuccess = (e) => {
-            const db = (e.target as IDBOpenDBRequest).result;
-            const tx = db.transaction("looks", "readonly");
-            const store = tx.objectStore("looks");
-            const getAllRequest = store.getAll() as IDBRequest<Look[]>;
+      req.onsuccess = (e) => {
+          const db = (e.target as IDBOpenDBRequest).result;
+          const tx = db.transaction("looks", "readonly");
+          const store = tx.objectStore("looks");
+          const getAllRequest = store.getAll() as IDBRequest<Look[]>;
 
-            getAllRequest.onsuccess = () => {
-            setLooks(getAllRequest.result);
-            resolve();
-            };
+          getAllRequest.onsuccess = () => {
+          setLooks(getAllRequest.result);
+          resolve();
+          };
 
-            getAllRequest.onerror = (ev) => reject((ev.target as IDBRequest).error);
-        };
+          getAllRequest.onerror = (ev) => reject((ev.target as IDBRequest).error);
+      };
 
-        req.onerror = (e) => reject((e.target as IDBOpenDBRequest).error);
-        });
-    };
+      req.onerror = (e) => reject((e.target as IDBOpenDBRequest).error);
+      });
+  };
 
 
   return { renameLook, folderLook, removeLook, loadLooks }

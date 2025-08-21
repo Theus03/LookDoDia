@@ -1,5 +1,6 @@
 import type { Look } from "../types/Look";
 import type { Folder } from "../types/Folder";
+import { useLookActions } from "../hooks/useLooksActions";
 
 export function saveLook(base64Image: string): Promise<Look> {
   return new Promise((resolve, reject) => {
@@ -37,6 +38,49 @@ export function saveLook(base64Image: string): Promise<Look> {
 
     req.onerror = (e) => reject((e.target as IDBOpenDBRequest).error);
   });
+}
+
+export function updateLook(look: Look): Promise<Look> {
+
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open("LookDB", 1);
+
+    req.onerror = (e) => console.error("Erro ao abrir o IndexedDB para atualizar dados do look: ", e);
+
+    req.onsuccess = (e) => {
+      const db = (e.target as IDBOpenDBRequest).result;
+      const tx = db.transaction("looks", "readwrite");
+      const store = tx.objectStore("looks");
+
+      const getRequest = store.get(look.id) as IDBRequest;
+
+      getRequest.onsuccess = () => {
+        const data = getRequest.result as Look;
+
+        if (!data) {
+          console.warn(`Look com ${look.id} não foi encontrado.`);
+          return;
+        }
+
+
+        data.name = look.name;
+        data.folder = look.folder;
+
+        const updateRequest = store.put(data);
+
+        updateRequest.onerror = (e) => console.error(`Problemas ao tentar atualizar o look. ${e}`);
+
+        resolve(data);
+      }
+
+      getRequest.onerror = (e) => {
+        console.error(`Problemas ao tentar fazer requisição de buscar o look. ${e}`);
+        reject((e.target as IDBOpenDBRequest).error);
+      } 
+
+    }
+
+  })
 }
 
 export function newFolder(): Promise<Folder & { id: number }> {

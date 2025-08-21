@@ -34,11 +34,11 @@ export default function Modal({ modal }: ModalProps) {
                         modal.type == "Rename" && (
                             <>
                                 <div className="py-4">
-                                    <input type="text" id="txtRenameImage" value={modal.value} contentEditable="true" className="input input-info" />
+                                    <input type="text" id="txtRenameImage" placeholder={modal.placeholder} contentEditable="true" className="input input-info" />
                                 </div>
                                   <div className="modal-action">
                                     <form method="dialog">
-                                        <button className={`btn btn-soft btn-success`} >Salvar</button>
+                                        <button className={`btn btn-soft btn-success`} id="btnSaveRenameLook" >Salvar</button>
                                     </form>
                                 </div>
                             </>

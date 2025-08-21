@@ -4,23 +4,54 @@ import type { Look } from "../types/Look"
 import { modalState } from "../atoms/modalState"
 import type { Modal } from "../types/Modal"
 import toast from "react-hot-toast"
+import { updateLook } from "../utils/indexedDBUtils"
 
 interface CardProps {
     look: Look
 }
 
 export default function Card({ look }: CardProps) {
-    const {  folderLook, removeLook } = useLookActions()
+    const { folderLook, removeLook, renameLook, loadLooks } = useLookActions()
     const modalProps = useSetRecoilState(modalState);
 
     function handleRename(id: number, name: string) {
-        const modal = document.getElementById("modal") as HTMLDialogElement;
-        modalProps({
-          type: "Rename",
-          title: "Renomear Imagem",
-          value: name
-        } as Modal)
-        modal.showModal();
+      const modal = document.getElementById("modal") as HTMLDialogElement;
+      modalProps({
+        type: "Rename",
+        title: "Renomear Imagem",
+        placeholder: name
+      } as Modal);
+
+      modal.showModal();
+
+      setTimeout(() => {
+        const modalBox = document.querySelector(".modal-box");
+        const modalAction = modalBox?.querySelector(".modal-action");
+        const btnSaveRenameLook = modalAction?.querySelector("#btnSaveRenameLook") as HTMLButtonElement;
+        
+        if (btnSaveRenameLook) {
+          btnSaveRenameLook.onclick = async () => {
+            await saveRenameLook(id);
+            modal.close();
+          };
+        }
+      });
+    }
+
+      
+    async function saveRenameLook(id: number) {
+      console.log(id);
+      const txtRenameImage = document.getElementById("txtRenameImage") as HTMLInputElement;
+      renameLook(id, txtRenameImage.value);
+      const lookUpdater: Look = {
+        id: id,
+        data: look.data,
+        folder: look.folder,
+        imagem: look.imagem,
+        name: txtRenameImage.value
+      }
+      await updateLook(lookUpdater);
+      loadLooks();
     }
 
     function handleFolder(id: number, folder: string) {
@@ -28,9 +59,25 @@ export default function Card({ look }: CardProps) {
         modalProps({
           type: "Folder",
           title: "Adicionar na Pastar",
-          value: folder
+          placeholder: folder
         } as Modal)
         modal.showModal();
+
+        const btnSalvarFolderLook = document.getElementById("btnSalvarFolderLook") as HTMLButtonElement;
+        btnSalvarFolderLook.onclick = () => saveLookInFolder(id);
+    }
+
+    function saveLookInFolder(id: number) {
+        const selectedRadio = document.querySelector(".folder input[type='radio']:checked") as HTMLInputElement;
+        if (selectedRadio) {
+          const folderDiv = selectedRadio.closest('.folder');
+          const folderName = folderDiv?.querySelector('.nameFolder')?.textContent.trim();
+          console.log(folderName);
+          if (folderName){
+            folderLook(id, folderName);
+          }
+
+        }
     }
 
     function handleRemove(id: number) {
@@ -44,7 +91,7 @@ export default function Card({ look }: CardProps) {
             <figure className="max-[580px]:w-50 max-[450px]:w-75">
               <img  src={look.imagem} alt="Look Image" />
             </figure>
-            <span className="card-title p-2 max-[400px]:text-base">${look.name}</span>
+            <span className="card-title p-2 max-[400px]:text-base">{look.name}</span>
             {
               (look.folder != "" && look.folder != undefined) ? `<div className='badge badge-soft badge-warning m-2'>${look.folder}</div>` : ``
             }
