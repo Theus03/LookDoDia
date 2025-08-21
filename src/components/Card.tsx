@@ -4,7 +4,7 @@ import type { Look } from "../types/Look"
 import { modalState } from "../atoms/modalState"
 import type { Modal } from "../types/Modal"
 import toast from "react-hot-toast"
-import { updateLook } from "../utils/indexedDBUtils"
+import { newFolder, updateLook } from "../utils/indexedDBUtils"
 
 interface CardProps {
     look: Look
@@ -38,7 +38,6 @@ export default function Card({ look }: CardProps) {
       });
     }
 
-      
     async function saveRenameLook(id: number) {
       console.log(id);
       const txtRenameImage = document.getElementById("txtRenameImage") as HTMLInputElement;
@@ -66,6 +65,12 @@ export default function Card({ look }: CardProps) {
         setTimeout(() => {
           const modalBox = document.querySelector(".modal-box");
           const modalAction = modalBox?.querySelector(".modal-action");
+          const btnAddFolderLook = modalAction?.querySelector("#btnAddFolderLook") as HTMLButtonElement;
+          if (btnAddFolderLook) {
+            btnAddFolderLook.onclick = async () => {
+              await handleAddFolder(folder);
+            }
+          }
           const btnSaveFolderLook = modalAction?.querySelector("#btnSaveFolderLook") as HTMLButtonElement;
           if (btnSaveFolderLook) {
               btnSaveFolderLook.onclick = async () => {
@@ -76,12 +81,25 @@ export default function Card({ look }: CardProps) {
         })        
     }
 
+    async function handleAddFolder(folderName: string) {
+      const containerFolder = document.getElementById("containerFolder") as HTMLDivElement;
+      let folder = `<div class="folder">
+                <input type="radio" name="radio-8" class="radio radio-warning" checked="${folderName == "" ? `false` : `true`}" />
+                <span class="nameFolder" contenteditable="true">${folderName == "" ? `` : folderName}</span>
+            </div>`    
+      containerFolder.innerHTML += folder;
+      let els = document.querySelectorAll(".nameFolder");
+      const el = els[els.length - 1] as HTMLSpanElement;
+      el.focus();
+      document.getSelection()?.collapse(el, 1);
+      await newFolder();
+    }
+
     async function saveLookInFolder(id: number) {
         const selectedRadio = document.querySelector(".folder input[type='radio']:checked") as HTMLInputElement;
         if (selectedRadio) {
           const folderDiv = selectedRadio.closest('.folder');
           const folderName: string = folderDiv?.querySelector('.nameFolder')?.textContent.trim() || "";
-          console.log(folderName);
           folderLook(id, folderName);
             const lookUpdater: Look = {
               id: id,
