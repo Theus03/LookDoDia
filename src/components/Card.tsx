@@ -98,20 +98,18 @@ export default function Card({ look }: CardProps) {
     async function saveLookInFolder(id: number) {
         const selectedRadio = document.querySelector(".folder input[type='radio']:checked") as HTMLInputElement;
         if (selectedRadio) {
-          const folderDiv = selectedRadio.closest('.folder');
-          if (folderDiv){
-            const folderName: string = folderDiv?.querySelector('.nameFolder')?.textContent.trim() || "";
-            folderLook(id, folderName);
-              const lookUpdater: Look = {
-                id: id,
-                data: look.data,
-                folder: folderName,
-                imagem: look.imagem,
-                name: look.name
-              }
-              await updateLook(lookUpdater);
-              loadLooks();
+        const folderDiv = selectedRadio.closest('.folder');
+          const folderName: string = folderDiv?.querySelector('.nameFolder')?.textContent?.trim() || "";
+          folderLook(id, folderName);
+            const lookUpdater: Look = {
+              id: id,
+              data: look.data,
+              folder: folderName,
+              imagem: look.imagem,
+              name: look.name
             }
+            await updateLook(lookUpdater);
+            loadLooks();
           }
     }
 
