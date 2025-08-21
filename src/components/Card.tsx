@@ -11,7 +11,7 @@ interface CardProps {
 }
 
 export default function Card({ look }: CardProps) {
-    const { folderLook, removeLook, renameLook, loadLooks } = useLookActions()
+    const { removeLook, renameLook, loadLooks } = useLookActions()
     const modalProps = useSetRecoilState(modalState);
 
     function handleRename(id: number, name: string) {
@@ -64,21 +64,18 @@ export default function Card({ look }: CardProps) {
         modal.showModal();
 
         const btnSalvarFolderLook = document.getElementById("btnSalvarFolderLook") as HTMLButtonElement;
-        btnSalvarFolderLook.onclick = () => saveLookInFolder(id);
+        console.log(btnSalvarFolderLook, id);
+        //btnSalvarFolderLook.onclick = () => saveLookInFolder(id);
     }
 
-    function saveLookInFolder(id: number) {
-        const selectedRadio = document.querySelector(".folder input[type='radio']:checked") as HTMLInputElement;
-        if (selectedRadio) {
-          const folderDiv = selectedRadio.closest('.folder');
-          const folderName = folderDiv?.querySelector('.nameFolder')?.textContent.trim();
-          console.log(folderName);
-          if (folderName){
-            folderLook(id, folderName);
-          }
-
-        }
-    }
+    // function saveLookInFolder(id: number) {
+    //     const selectedRadio = document.querySelector(".folder input[type='radio']:checked") as HTMLInputElement;
+    //     if (selectedRadio) {
+    //       const folderDiv = selectedRadio.closest('.folder');
+    //       const folderName = folderDiv.querySelector('.nameFolder')?.textContent.trim() || "";
+    //       console.log(folderName);
+    //       folderLook(id, folderName);
+    // }
 
     function handleRemove(id: number) {
       removeLook(id);

@@ -1,6 +1,5 @@
 import type { Look } from "../types/Look";
 import type { Folder } from "../types/Folder";
-import { useLookActions } from "../hooks/useLooksActions";
 
 export function saveLook(base64Image: string): Promise<Look> {
   return new Promise((resolve, reject) => {
