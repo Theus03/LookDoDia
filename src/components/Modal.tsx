@@ -16,15 +16,15 @@ export default function Modal({ modal }: ModalProps) {
                         modal.type == "Folder" && (
                             <>
                                 <div className="py-4 flex gap-2 flex-col" id={`container${modal.type}`}>
-                                    <div className="folder">
+                                    <div className="folder flex items-center">
                                         <input type="radio" name="radio-8" className="radio radio-warning" />
-                                        <span className="nameFolder" contentEditable="true">Pasta Teste</span>
+                                        <span className="nameFolder ml-2" contentEditable="true">Pasta Teste</span>
                                     </div>
                                 </div>
                                 <div className="modal-action">
                                     <span className={`btn btn-soft btn-warning`} id="btnAddFolderLook">Nova Pasta</span>
                                     <form method="dialog">
-                                        <button className={`btn btn-soft btn-warning`} id="btnSaveFolderLook">Salvar</button>
+                                        <button className={`btn btn-soft btn-success`} id="btnSaveFolderLook">Salvar</button>
                                     </form>
                                 </div>
                             </>

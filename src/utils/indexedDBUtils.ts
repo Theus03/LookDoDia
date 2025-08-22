@@ -82,7 +82,7 @@ export function updateLook(look: Look): Promise<Look> {
   })
 }
 
-export function newFolder(): Promise<Folder & { id: number }> {
+export function newFolder(nameFolder: string): Promise<Folder & { id: number }> {
   return new Promise((resolve, reject) => {
     const req = indexedDB.open("FolderDB", 1);
 
@@ -99,7 +99,7 @@ export function newFolder(): Promise<Folder & { id: number }> {
       const store = tx.objectStore("folders");
 
       const folderData: Omit<Folder, "id"> = {
-        name: "Nova Pasta",
+        name: nameFolder,
       };
 
       const addRequest = store.add(folderData) as IDBRequest<number>;

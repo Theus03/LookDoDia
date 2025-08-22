@@ -1,10 +1,11 @@
-import { useSetRecoilState } from "recoil"
+import { useRecoilValue, useSetRecoilState } from "recoil"
 import { useLookActions } from "../hooks/useLooksActions"
 import type { Look } from "../types/Look"
 import { modalState } from "../atoms/modalState"
 import type { Modal } from "../types/Modal"
 import toast from "react-hot-toast"
 import { newFolder, updateLook } from "../utils/indexedDBUtils"
+import { folderListState } from "../atoms/folderListState"
 
 interface CardProps {
     look: Look
@@ -13,6 +14,7 @@ interface CardProps {
 export default function Card({ look }: CardProps) {
     const { folderLook, removeLook, renameLook, loadLooks } = useLookActions()
     const modalProps = useSetRecoilState(modalState);
+    const folders = useRecoilValue(folderListState);
 
     function handleRename(id: number, name: string) {
       const modal = document.getElementById("modal") as HTMLDialogElement;
@@ -68,7 +70,7 @@ export default function Card({ look }: CardProps) {
           const btnAddFolderLook = modalAction?.querySelector("#btnAddFolderLook") as HTMLButtonElement;
           if (btnAddFolderLook) {
             btnAddFolderLook.onclick = async () => {
-              await handleAddFolder(folder);
+              await handleAddFolder(folder, look);
             }
           }
           const btnSaveFolderLook = modalAction?.querySelector("#btnSaveFolderLook") as HTMLButtonElement;
@@ -81,18 +83,26 @@ export default function Card({ look }: CardProps) {
         })        
     }
 
-    async function handleAddFolder(folderName: string) {
+    async function handleAddFolder(folderName: string, look: Look) {
       const containerFolder = document.getElementById("containerFolder") as HTMLDivElement;
-      let folder = `<div class="folder">
-                <input type="radio" name="radio-8" class="radio radio-warning" checked="${folderName == "" ? `false` : `true`}" />
-                <span class="nameFolder" contenteditable="true">${folderName == "" ? `` : folderName}</span>
-            </div>`    
-      containerFolder.innerHTML += folder;
+      let folder: string = ``;
+      if (containerFolder.firstChild == null) {
+        folder = `<div class="folder flex items-center">
+                  <input type="radio" name="radio-8" class="radio radio-warning" checked="${folderName == "" ? `false` : `true`}" />
+                  <span class="nameFolder ml-2" contenteditable="true">${folderName == "" ? `` : folderName}</span>
+              </div>`    
+        containerFolder.innerHTML += folder;
+      } else {
+          folders.forEach(item => {
+           folder = `<div class="folder flex items-center" data-id='folder-${item.id}'>
+                  <input type="radio" name="radio-8" class="radio radio-warning" checked="${look.folder.toLowerCase() == item.name.toLowerCase() ? `true` : `false`}" />
+                  <span class="nameFolder ml-2" contenteditable="true">${item.name}</span>
+              </div>`    
+          })
+      }
       let els = document.querySelectorAll(".nameFolder");
       const el = els[els.length - 1] as HTMLSpanElement;
       el.focus();
-      document.getSelection()?.collapse(el, 1);
-      await newFolder();
     }
 
     async function saveLookInFolder(id: number) {
@@ -109,6 +119,7 @@ export default function Card({ look }: CardProps) {
               name: look.name
             }
             await updateLook(lookUpdater);
+            await newFolder(folderName);
             loadLooks();
           }
     }
