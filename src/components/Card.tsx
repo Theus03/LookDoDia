@@ -1,4 +1,4 @@
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
+import { useRecoilState,  useSetRecoilState } from "recoil"
 import { useLookActions } from "../hooks/useLooksActions"
 import type { Look } from "../types/Look"
 import { modalState } from "../atoms/modalState"
@@ -15,7 +15,7 @@ export default function Card({ look }: CardProps) {
     const { folderLook, removeLook, renameLook, loadLooks } = useLookActions()
     const modalProps = useSetRecoilState(modalState);
     const [_, setFolders] = useRecoilState(folderListState);
-    const folders = useRecoilValue(folderListState);
+    //const folders = useRecoilValue(folderListState);
 
     function handleRename(id: number, name: string) {
       const modal = document.getElementById("modal") as HTMLDialogElement;
@@ -76,7 +76,7 @@ export default function Card({ look }: CardProps) {
           const btnAddFolderLook = modalAction?.querySelector("#btnAddFolderLook") as HTMLButtonElement;
           if (btnAddFolderLook) {
             btnAddFolderLook.onclick = async () => {
-              await handleAddFolder(folder, look);
+              await handleAddFolder(folder);
             }
           }
           const btnSaveFolderLook = modalAction?.querySelector("#btnSaveFolderLook") as HTMLButtonElement;
@@ -89,7 +89,7 @@ export default function Card({ look }: CardProps) {
         })        
     }
 
-    async function handleAddFolder(folderName: string, look: Look) {
+    async function handleAddFolder(folderName: string) {
       const containerFolder = document.getElementById("containerFolder") as HTMLDivElement;
       let folder: string = ``;
       console.log(containerFolder.firstChild)
