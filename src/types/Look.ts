@@ -3,5 +3,6 @@ export interface Look {
     name: string;
     imagem: string;
     data: string;
+    idFolder: number;
     folder: string;
 }

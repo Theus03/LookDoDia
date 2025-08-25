@@ -1,10 +1,11 @@
 import type { Modal } from "../types/Modal"
+import Folder from "./Folder";
 
 interface ModalProps {
     modal: Modal
 }
 
-export default function Modal({ modal }: ModalProps) {
+export default function Modal({ modal }: ModalProps) {    
     return (
             <dialog id="modal" className="modal">
                 <div className="modal-box">
@@ -16,10 +17,7 @@ export default function Modal({ modal }: ModalProps) {
                         modal.type == "Folder" && (
                             <>
                                 <div className="py-4 flex gap-2 flex-col" id={`container${modal.type}`}>
-                                    <div className="folder flex items-center">
-                                        <input type="radio" name="radio-8" className="radio radio-warning" />
-                                        <span className="nameFolder ml-2" contentEditable="true">Pasta Teste</span>
-                                    </div>
+                                    {<Folder />}
                                 </div>
                                 <div className="modal-action">
                                     <span className={`btn btn-soft btn-warning`} id="btnAddFolderLook">Nova Pasta</span>

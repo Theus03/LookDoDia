@@ -22,6 +22,7 @@ export function saveLook(base64Image: string): Promise<Look> {
         imagem: base64Image,
         data: new Date().toISOString(),
         folder: "",
+        idFolder: 0
       };
 
       const addRequest = store.add(lookData) as IDBRequest<number>;
@@ -114,4 +115,36 @@ export function newFolder(nameFolder: string): Promise<Folder & { id: number }> 
 
     req.onerror = (e) => reject((e.target as IDBOpenDBRequest).error);
   });
+}
+
+export function getFolders(): Promise<Folder[]> {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open("FolderDB", 1);
+    req.onerror = (e) => console.error("Erro ao abrir o IndexedDB para listar as pastas: ", e);
+
+    req.onsuccess = (e) => {
+      const db = (e.target as IDBOpenDBRequest).result;
+      const tx = db.transaction("folders", "readwrite");
+      const store = tx.objectStore("folders");
+
+      const getRequest = store.getAll();
+
+      getRequest.onsuccess = () => {
+        const data = getRequest.result;
+
+        if (!data) {
+          console.warn(`Você não criou nenhuma pasta ainda...`);
+          return;
+        }
+        
+        resolve(data);
+      }
+
+      getRequest.onerror = (e) => {
+        console.error(`Problemas ao tentar listar as pastas disponíveis.`);
+        reject((e.target as IDBOpenDBRequest).error);
+      } 
+
+    }
+  })
 }

@@ -1,10 +1,10 @@
-import { useRecoilValue, useSetRecoilState } from "recoil"
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
 import { useLookActions } from "../hooks/useLooksActions"
 import type { Look } from "../types/Look"
 import { modalState } from "../atoms/modalState"
 import type { Modal } from "../types/Modal"
 import toast from "react-hot-toast"
-import { newFolder, updateLook } from "../utils/indexedDBUtils"
+import { getFolders, newFolder, updateLook } from "../utils/indexedDBUtils"
 import { folderListState } from "../atoms/folderListState"
 
 interface CardProps {
@@ -14,6 +14,7 @@ interface CardProps {
 export default function Card({ look }: CardProps) {
     const { folderLook, removeLook, renameLook, loadLooks } = useLookActions()
     const modalProps = useSetRecoilState(modalState);
+    const [_, setFolders] = useRecoilState(folderListState);
     const folders = useRecoilValue(folderListState);
 
     function handleRename(id: number, name: string) {
@@ -49,20 +50,25 @@ export default function Card({ look }: CardProps) {
         data: look.data,
         folder: look.folder,
         imagem: look.imagem,
-        name: txtRenameImage.value
+        name: txtRenameImage.value,
+        idFolder: look.idFolder
       }
       await updateLook(lookUpdater);
       loadLooks();
     }
 
-    function handleFolder(id: number, folder: string) {
+    async function handleFolder(id: number, folder: string) {
       const modal = document.getElementById("modal") as HTMLDialogElement;
-        modalProps({
-          type: "Folder",
-          title: "Adicionar na Pastar",
-          placeholder: folder
-        } as Modal)
-        modal.showModal();
+      
+      modalProps({
+        type: "Folder",
+        title: "Adicionar na Pasta",
+        placeholder: folder
+      } as Modal)
+      modal.showModal();
+
+      const allFolders = await getFolders();
+      setFolders(allFolders);
 
         setTimeout(() => {
           const modalBox = document.querySelector(".modal-box");
@@ -86,20 +92,13 @@ export default function Card({ look }: CardProps) {
     async function handleAddFolder(folderName: string, look: Look) {
       const containerFolder = document.getElementById("containerFolder") as HTMLDivElement;
       let folder: string = ``;
-      if (containerFolder.firstChild == null) {
-        folder = `<div class="folder flex items-center">
-                  <input type="radio" name="radio-8" class="radio radio-warning" checked="${folderName == "" ? `false` : `true`}" />
-                  <span class="nameFolder ml-2" contenteditable="true">${folderName == "" ? `` : folderName}</span>
-              </div>`    
+      console.log(containerFolder.firstChild)
+      folder = `<div class="folder flex items-center">
+                <input type="radio" name="radio-8" class="radio radio-warning" checked="${folderName == "" ? `false` : `true`}" />
+                <span class="nameFolder ml-2" contenteditable="true">${folderName == "" ? `` : folderName}</span>
+            </div>`    
         containerFolder.innerHTML += folder;
-      } else {
-          folders.forEach(item => {
-           folder = `<div class="folder flex items-center" data-id='folder-${item.id}'>
-                  <input type="radio" name="radio-8" class="radio radio-warning" checked="${look.folder.toLowerCase() == item.name.toLowerCase() ? `true` : `false`}" />
-                  <span class="nameFolder ml-2" contenteditable="true">${item.name}</span>
-              </div>`    
-          })
-      }
+      
       let els = document.querySelectorAll(".nameFolder");
       const el = els[els.length - 1] as HTMLSpanElement;
       el.focus();
@@ -116,10 +115,11 @@ export default function Card({ look }: CardProps) {
               data: look.data,
               folder: folderName,
               imagem: look.imagem,
-              name: look.name
+              name: look.name,
+              idFolder: (await newFolder(folderName)).id
             }
+
             await updateLook(lookUpdater);
-            await newFolder(folderName);
             loadLooks();
           }
     }
