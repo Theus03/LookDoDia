@@ -148,3 +148,34 @@ export function getFolders(): Promise<Folder[]> {
     }
   })
 }
+
+export function getFolderByName(folderName: string): Promise<Folder> {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open("FolderDB", 1);
+    req.onerror = (e) => console.error("Erro ao abrir o IndexedDB para conseguir obter a pasta: ", e);
+
+    req.onsuccess = (e) => {
+        const db = (e.target as IDBOpenDBRequest).result;
+      const tx = db.transaction("folders", "readwrite");
+      const store = tx.objectStore("folders");
+
+      const getRequest = store.getAll();
+
+      getRequest.onsuccess = () => {
+        const data = getRequest.result.filter((d: Folder) => d.name.toLowerCase().trim() == folderName.toLowerCase().trim())[0];
+
+        if (!data) {
+          console.warn(`Você não criou nenhuma pasta ainda...`);
+          return;
+        }
+        
+        resolve(data);
+      }
+
+      getRequest.onerror = (e) => {
+        console.error(`Problemas ao tentar listar as pastas disponíveis.`);
+        reject((e.target as IDBOpenDBRequest).error);
+      }  
+    }
+  })
+}

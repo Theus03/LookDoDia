@@ -4,8 +4,9 @@ import type { Look } from "../types/Look"
 import { modalState } from "../atoms/modalState"
 import type { Modal } from "../types/Modal"
 import toast from "react-hot-toast"
-import { getFolders, newFolder, updateLook } from "../utils/indexedDBUtils"
+import { getFolderByName, getFolders, newFolder, updateLook } from "../utils/indexedDBUtils"
 import { folderListState } from "../atoms/folderListState"
+import type { Folder } from "../types/Folder"
 
 interface CardProps {
     look: Look
@@ -14,8 +15,7 @@ interface CardProps {
 export default function Card({ look }: CardProps) {
     const { folderLook, removeLook, renameLook, loadLooks } = useLookActions()
     const modalProps = useSetRecoilState(modalState);
-    const [_, setFolders] = useRecoilState(folderListState);
-    //const folders = useRecoilValue(folderListState);
+    const [folders, setFolders] = useRecoilState(folderListState);
 
     function handleRename(id: number, name: string) {
       const modal = document.getElementById("modal") as HTMLDialogElement;
@@ -67,8 +67,14 @@ export default function Card({ look }: CardProps) {
       } as Modal)
       modal.showModal();
 
-      const allFolders = await getFolders();
-      setFolders(allFolders);
+
+      const allFolders: Folder[] = await getFolders();;
+
+      if (allFolders.length == 0) {
+        const arrFolders = folders
+        arrFolders.forEach((f: Folder) => allFolders.push(f));
+        setFolders(allFolders);
+      }
 
         setTimeout(() => {
           const modalBox = document.querySelector(".modal-box");
@@ -92,7 +98,6 @@ export default function Card({ look }: CardProps) {
     async function handleAddFolder(folderName: string) {
       const containerFolder = document.getElementById("containerFolder") as HTMLDivElement;
       let folder: string = ``;
-      console.log(containerFolder.firstChild)
       folder = `<div class="folder flex items-center">
                 <input type="radio" name="radio-8" class="radio radio-warning" checked="${folderName == "" ? `false` : `true`}" />
                 <span class="nameFolder ml-2" contenteditable="true">${folderName == "" ? `` : folderName}</span>
@@ -110,15 +115,17 @@ export default function Card({ look }: CardProps) {
         const folderDiv = selectedRadio.closest('.folder');
           const folderName: string = folderDiv?.querySelector('.nameFolder')?.textContent?.trim() || "";
           folderLook(id, folderName);
-            const lookUpdater: Look = {
-              id: id,
-              data: look.data,
-              folder: folderName,
-              imagem: look.imagem,
-              name: look.name,
-              idFolder: (await newFolder(folderName)).id
-            }
+          await newFolder(folderName)
 
+          const lookUpdater: Look = {
+            id: id,
+            data: look.data,
+            folder: folderName,
+            imagem: look.imagem,
+            name: look.name,
+            idFolder: (await getFolderByName(folderName)).id ?? 0
+          }
+            
             await updateLook(lookUpdater);
             loadLooks();
           }
