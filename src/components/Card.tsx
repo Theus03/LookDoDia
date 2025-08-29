@@ -59,6 +59,8 @@ export default function Card({ look }: CardProps) {
 
     async function handleFolder(id: number, folder: string) {
       const modal = document.getElementById("modal") as HTMLDialogElement;
+
+      const allFolders: Folder[] = await getFolders();;
       
       modalProps({
         type: "Folder",
@@ -68,7 +70,6 @@ export default function Card({ look }: CardProps) {
       modal.showModal();
 
 
-      const allFolders: Folder[] = await getFolders();;
 
       if (allFolders.length == 0) {
         const arrFolders = folders
@@ -96,40 +97,42 @@ export default function Card({ look }: CardProps) {
     }
 
     async function handleAddFolder(folderName: string) {
-      const containerFolder = document.getElementById("containerFolder") as HTMLDivElement;
-      let folder: string = ``;
-      folder = `<div class="folder flex items-center">
-                <input type="radio" name="radio-8" class="radio radio-warning" checked="${folderName == "" ? `false` : `true`}" />
-                <span class="nameFolder ml-2" contenteditable="true">${folderName == "" ? `` : folderName}</span>
-            </div>`    
-        containerFolder.innerHTML += folder;
-      
-      let els = document.querySelectorAll(".nameFolder");
-      const el = els[els.length - 1] as HTMLSpanElement;
-      el.focus();
+    if (!folderName.trim()) return;
+
+    const newFolderId = folders.length > 0 ? Math.max(...folders.map(f => f.id)) + 1 : 1;
+    const newFolderObj: Folder = { id: newFolderId, name: folderName, idLook: 0 };
+
+    setFolders([...folders, newFolderObj]);
+    
+    modalProps({
+        type: "Folder",
+        title: "Adicionar na Pasta",
+        placeholder: folderName
+    } as Modal);
+}
+
+async function saveLookInFolder(id: number) {
+    // Get the current modal state to access the placeholder
+    const modalStateValue = modalState instanceof Function ? modalState() : undefined;
+    const selectedFolderName = modalStateValue?.placeholder || "";
+    if (!selectedFolderName) return;
+
+    folderLook(id, selectedFolderName);
+    await newFolder(selectedFolderName);
+
+    const lookUpdater: Look = {
+        id: id,
+        data: look.data,
+        folder: selectedFolderName,
+        imagem: look.imagem,
+        name: look.name,
+        idFolder: (await getFolderByName(selectedFolderName))?.id ?? 0
     }
 
-    async function saveLookInFolder(id: number) {
-        const selectedRadio = document.querySelector(".folder input[type='radio']:checked") as HTMLInputElement;
-        if (selectedRadio) {
-        const folderDiv = selectedRadio.closest('.folder');
-          const folderName: string = folderDiv?.querySelector('.nameFolder')?.textContent?.trim() || "";
-          folderLook(id, folderName);
-          await newFolder(folderName)
+    await updateLook(lookUpdater);
+    loadLooks();
+}
 
-          const lookUpdater: Look = {
-            id: id,
-            data: look.data,
-            folder: folderName,
-            imagem: look.imagem,
-            name: look.name,
-            idFolder: (await getFolderByName(folderName)).id ?? 0
-          }
-            
-            await updateLook(lookUpdater);
-            loadLooks();
-          }
-    }
 
     function handleRemove(id: number) {
       removeLook(id);

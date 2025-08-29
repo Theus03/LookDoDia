@@ -1,4 +1,5 @@
 export interface Folder {
-    id?: number;
+    id: number;
     name: string;
+    idLook: number;
 }
