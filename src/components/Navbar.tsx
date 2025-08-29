@@ -15,7 +15,7 @@ export default function Navbar() {
                 </div>
             </div>
             <div className="navbar-center">
-                <img src="./public/LookDoDia.png" width="150" />
+                <img src="/LookDoDia.png" width="150" />
             </div>
             <div className="navbar-end">
                 <button className="btn btn-ghost btn-circle">
